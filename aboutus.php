@@ -14,15 +14,15 @@
     <header class="navbar">
         <div class="logo">MANDARINA DECOJITA PRESS</div>
 
+        <!-- Mobile Menu Button -->
         <div class="menu-toggle" id="menuToggle">☰</div>
 
         <nav id="navMenu">
             <ul>
-                <li><a href="#">Acasa</a></li>
-                <li><a href="#">Jurnalisti</a></li>
+                <li><a href="/">Acasa</a></li>
+                <li><a href="journalism/login.php">Jurnalisti</a></li>
                 <li><a href="#">Date Analitice</a></li>
-                <li><a href="#">Login</a></li>
-                <li><a href="#" class="active">Despre Noi</a></li>
+                <li><a href="aboutus.php">Despre Noi</a></li>
             </ul>
         </nav>
     </header>

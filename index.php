@@ -21,8 +21,7 @@
                 <li><a href="#">Acasa</a></li>
                 <li><a href="journalism/login.php">Jurnalisti</a></li>
                 <li><a href="#">Date Analitice</a></li>
-                <li><a href="#">Login</a></li>
-                <li><a href="#">Despre Noi</a></li>
+                <li><a href="aboutus.php">Despre Noi</a></li>
             </ul>
         </nav>
     </header>
@@ -70,7 +69,6 @@
 
                     <article class="card">
                         <a href="<?php echo htmlspecialchars($link); ?>">
-                            <img src="<?php echo htmlspecialchars($image); ?>" alt="">
                             <h3><?php echo htmlspecialchars($title); ?></h3>
                             <p><?php echo htmlspecialchars($summary); ?></p>
                         </a>

@@ -8,7 +8,7 @@ if (empty($_SESSION['journalist_logged'])) {
 require __DIR__ . '/../includes/upload.php';
 $uploadResult = null;
 $formResult = null;
-$apiEndpoint = 'http://localhost:8080/createRisk'; // adjust to your API endpoint
+$apiEndpoint = 'http://localhost:8080/risks'; // endpoint to create a risk record
 $locationsEndpoint = 'http://localhost:8080/locations'; // endpoint to fetch locations
 $risksValEndpoint = 'http://localhost:8080/risks-val'; // endpoint to fetch risk category options
 
@@ -109,6 +109,11 @@ try {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
+    // Read the form fields early so uploads won't affect slug generation
+    $title = trim($_POST['title'] ?? '');
+    $mainText = trim($_POST['mainText'] ?? '');
+    $locationId = $_POST['locationId'] ?? '';
+    $riskCategory = $_POST['riskCategory'] ?? '';
 
     // Process PDF uploads (up to 10 files)
     $savedFiles = [];
@@ -146,11 +151,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Read the form fields (ensure inputs have `name` attributes)
-    $title = trim($_POST['title'] ?? '');
-    $mainText = trim($_POST['mainText'] ?? '');
-    $locationId = $_POST['locationId'] ?? '';
-    $riskCategory = $_POST['riskCategory'] ?? '';
+    // Handle optional single post image upload (saved to /articles/src)
+    $image = '';
+    if (!empty($_FILES['post_image']) && isset($_FILES['post_image']['error']) && $_FILES['post_image']['error'] !== UPLOAD_ERR_NO_FILE) {
+        $img = $_FILES['post_image'];
+        if ($img['error'] === UPLOAD_ERR_OK) {
+            // basic size check (5 MB)
+            if ($img['size'] > 5 * 1024 * 1024) {
+                $uploadResults[] = ['success' => false, 'message' => 'Image exceeds 5MB limit.'];
+            } else {
+                $finfo = new finfo(FILEINFO_MIME_TYPE);
+                $mime = $finfo->file($img['tmp_name']);
+                if (strpos($mime, 'image/') !== 0) {
+                    $uploadResults[] = ['success' => false, 'message' => 'Uploaded file is not an image. Detected: ' . $mime];
+                } else {
+                    $imagesDir = __DIR__ . '/../articles/src';
+                    if (!is_dir($imagesDir)) {
+                        mkdir($imagesDir, 0755, true);
+                    }
+                    // sanitize original name and make unique
+                    $originalImg = basename($img['name']);
+                    $cleanImg = preg_replace('/[^A-Za-z0-9._-]/', '_', $originalImg);
+                    $uniqueImg = sprintf("%s_%s_%s", date('YmdHis'), bin2hex(random_bytes(6)), $cleanImg);
+                    $dest = rtrim($imagesDir, '/\\') . DIRECTORY_SEPARATOR . $uniqueImg;
+                    if (move_uploaded_file($img['tmp_name'], $dest)) {
+                        @chmod($dest, 0644);
+                        // Use root-relative path so article pages under /journalism/ resolve correctly
+                        $image = '/articles/src/' . $uniqueImg;
+                        $uploadResults[] = ['success' => true, 'message' => 'Image uploaded successfully.', 'filename' => $uniqueImg, 'type' => 'image'];
+                    } else {
+                        $uploadResults[] = ['success' => false, 'message' => 'Failed to move uploaded image.', 'type' => 'image'];
+                    }
+                }
+            }
+        } else {
+            $uploadResults[] = ['success' => false, 'message' => 'Image upload error code: ' . $img['error'], 'type' => 'image'];
+        }
+    }
 
     // If publishing or saving draft, create a PHP article file in /articles
     if (in_array($action, ['publish', 'draft', 'upload_pdf'], true)) {
@@ -168,7 +205,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Build a short summary from the article body
         $plain = trim(strip_tags($mainText));
         $summary = mb_substr($plain, 0, 160);
-        $image = ''; // optionally set when user provides one
         $link = './journalism/article.php?slug=' . $slug;
 
         $content = "<?php\n";
@@ -178,7 +214,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $content .= "\$image = " . var_export($image, true) . ";\n";
         $content .= "\$link = " . var_export($link, true) . ";\n";
         $content .= "\$body = " . var_export($mainText, true) . ";\n";
-        $content .= "\$files = " . var_export($savedFiles, true) . ";\n";
         $content .= "?>\n";
 
         // Write file (overwrite if exists)
@@ -188,27 +223,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Prepare payload for API
     $payload = [
         'info' => $mainText,
-        'satRel' => $locationId,  // Location (judet) validation
-        'riskCategory' => $riskCategory,  // Risk category validation
+        'satRel' => $locationId,
+        // 'type_risk' should be the chosen risk id (validate below)
+        'type_risk' => $riskCategory,
         'arrayStringNumeFisiere' => $savedFiles,
     ];
 
-    // Send POST to API endpoint (JSON)
-    $ch = curl_init($apiEndpoint);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-    $apiResp = curl_exec($ch);
-    $apiErr = curl_error($ch) ?: null;
-    $apiCode = curl_getinfo($ch, CURLINFO_HTTP_CODE) ?: null;
-    curl_close($ch);
+    // Validate selected location and risk against fetched options
+    $validLocation = false;
+    foreach ($locationOptions as $opt) {
+        if ((string)($opt['id'] ?? '') === (string)$locationId) { $validLocation = true; break; }
+    }
+    $validRisk = false;
+    foreach ($categoryOptions as $opt) {
+        if ((string)($opt['id'] ?? '') === (string)$riskCategory) { $validRisk = true; break; }
+    }
+
+    $apiStatus = null;
+    if (!$validLocation) {
+        $apiStatus = ['success' => false, 'message' => 'Invalid location selected. Please choose a valid location.'];
+    } elseif (!$validRisk) {
+        $apiStatus = ['success' => false, 'message' => 'Invalid risk category selected. Please choose a valid category.'];
+    } else {
+        // Send POST to API endpoint (JSON)
+        $ch = curl_init($apiEndpoint);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        $apiResp = curl_exec($ch);
+        $apiErr = curl_error($ch) ?: null;
+        $apiCode = curl_getinfo($ch, CURLINFO_HTTP_CODE) ?: null;
+        curl_close($ch);
+
+        // Try decode response for friendly message
+        $decoded = null;
+        if ($apiResp) {
+            $decoded = json_decode($apiResp, true);
+        }
+        if ($apiErr) {
+            $apiStatus = ['success' => false, 'message' => 'API connection error: ' . $apiErr];
+        } elseif ($apiCode && $apiCode >= 400) {
+            $apiStatus = ['success' => false, 'message' => 'API error HTTP ' . $apiCode];
+        } elseif (is_array($decoded) && isset($decoded['status'])) {
+            // API returns structured object
+            $apiStatus = ['success' => (bool)$decoded['status'], 'message' => isset($decoded['content']) ? (is_string($decoded['content']) ? $decoded['content'] : json_encode($decoded['content'])) : $apiResp];
+        } else {
+            // Fallback: treat any HTTP 200 as success
+            $apiStatus = ['success' => true, 'message' => 'API responded: ' . ($apiResp ?: 'OK')];
+        }
+    }
 
     $formResult = [
         'written' => $written ?? false,
         'article_path' => ($written ?? false) ? ('articles/' . $fileName) : null,
         'upload' => $uploadResult,
-        'api' => ['response' => $apiResp, 'error' => $apiErr, 'code' => $apiCode],
+        'api_status' => $apiStatus,
     ];
 }
 ?>
@@ -415,6 +485,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <label for="pdf_files" style="font-weight:normal">Upload PDFs (optional, max 10 files, 15 MB each)</label>
                         <input type="file" name="pdf_files[]" id="pdf_files" accept="application/pdf" multiple>
                 </div>
+                <div style="display:flex;flex-direction:column;gap:8px;margin-left:16px;">
+                    <label for="post_image" style="font-weight:normal">Upload Post Image (optional, max 5 MB)</label>
+                    <input type="file" name="post_image" id="post_image" accept="image/*">
+                </div>
                 <input type="hidden" id="filesArray" name="files" value="[]">
                 <div id="uploadedFilesList">No files uploaded yet.</div>
 
@@ -423,10 +497,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <h4>Upload Results:</h4>
                         <?php foreach ($uploadResults as $idx => $result): ?>
                             <div style="margin:8px 0;padding:8px;border-left:3px solid <?php echo $result['success'] ? '#28a745' : '#dc3545'; ?>">
-                                <p class="<?php echo $result['success'] ? 'success' : 'error' ?>"><?php echo htmlspecialchars($result['message']); ?></p>
+                                        <?php if (!empty($result['type']) && $result['type'] === 'image' && !empty($result['success'])): ?>
+                                            <p class="<?php echo $result['success'] ? 'success' : 'error' ?>"><span id="imageUploadSuccess"><?php echo htmlspecialchars($result['message']); ?></span></p>
+                                        <?php else: ?>
+                                            <p class="<?php echo $result['success'] ? 'success' : 'error' ?>"><?php echo htmlspecialchars($result['message']); ?></p>
+                                        <?php endif; ?>
                                 <?php if ($result['success']): ?>
                                     <p>File: <code><?php echo htmlspecialchars($result['filename']); ?></code></p>
-                                    <p><a href="<?php echo htmlspecialchars('../uploads/' . rawurlencode($result['filename'])); ?>">Download</a></p>
+                                    <?php if (!empty($result['type']) && $result['type'] === 'image'): ?>
+                                        <p><a href="<?php echo htmlspecialchars('../articles/src/' . rawurlencode($result['filename'])); ?>">View Image</a></p>
+                                    <?php else: ?>
+                                        <p><a href="<?php echo htmlspecialchars('../uploads/' . rawurlencode($result['filename'])); ?>">Download</a></p>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             </div>
                         <?php endforeach; ?>
@@ -438,6 +520,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit" name="action" value="publish" class="btn btn-primary">Publish Post</button>
                 <?php if (!empty($formResult['written'])): ?>
                     <span id="publishSuccess" style="margin-left:12px;color:#155724;background:#d4edda;padding:8px;border-radius:6px;border:1px solid #c3e6cb;font-weight:bold;display:inline-block;opacity:1;transition:opacity .6s ease;">Article successfully published</span>
+                <?php endif; ?>
+                <?php if (!empty($formResult['api_status'])): ?>
+                    <?php $s = $formResult['api_status']; ?>
+                    <span id="apiStatus" style="margin-left:12px;color:<?php echo $s['success'] ? '#155724' : '#721c24'; ?>;background:<?php echo $s['success'] ? '#d4edda' : '#f8d7da'; ?>;padding:8px;border-radius:6px;border:1px solid <?php echo $s['success'] ? '#c3e6cb' : '#f5c6cb'; ?>;font-weight:bold;display:inline-block;opacity:1;transition:opacity .6s ease;"><?php echo htmlspecialchars($s['message'] ?? ''); ?></span>
                 <?php endif; ?>
             </div>
         </form>
@@ -455,6 +541,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             var up = document.getElementById('uploadResults');
             if (up) {
                 setTimeout(function(){ up.style.opacity = '0'; setTimeout(function(){ up.style.display = 'none'; }, 700); }, 5000);
+            }
+            // Fade image upload success specifically (if present)
+            var imgSuccess = document.getElementById('imageUploadSuccess');
+            if (imgSuccess) {
+                setTimeout(function(){ imgSuccess.style.opacity = '0'; setTimeout(function(){ imgSuccess.style.display = 'none'; }, 700); }, 4000);
+            }
+            // Fade API status (create/post response)
+            var apiStatus = document.getElementById('apiStatus');
+            if (apiStatus) {
+                setTimeout(function(){ apiStatus.style.opacity = '0'; setTimeout(function(){ apiStatus.style.display = 'none'; }, 700); }, 4500);
             }
         });
         </script>

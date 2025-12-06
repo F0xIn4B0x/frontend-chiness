@@ -86,11 +86,12 @@ nav {
 
 /* Hero */
 .hero {
-    background:#ffe8d7
-    height: 420px;
+    background: #ffe8d7;
+    min-height: 300px;
+    height: auto;
+    padding: 40px 20px;
     display: flex;
     align-items: center;
-    padding-left: 20px;
     position: relative;
     color: #000000;
 }
@@ -99,22 +100,25 @@ nav {
     content: "";
     position: absolute;
     inset: 0;
-    background: hsla(25, 100%, 92%, 0.612)
-;
+    background: hsla(25, 100%, 92%, 0.612);
+    z-index: 0;
 }
 
 .hero-content {
     position: relative;
+    z-index: 1;
     max-width: 500px;
 }
 
 .hero h1 {
     font-size: 2.4rem;
     margin-bottom: 10px;
+    line-height: 1.2;
 }
 
 .hero p {
     margin-bottom: 20px;
+    font-size: 1rem;
 }
 
 .btn {
@@ -123,6 +127,37 @@ nav {
     padding: 10px 20px;
     text-decoration: none;
     border-radius: 3px;
+    display: inline-block;
+}
+
+@media (max-width: 768px) {
+    .hero {
+        min-height: 200px;
+        padding: 30px 15px;
+    }
+
+    .hero h1 {
+        font-size: 1.8rem;
+    }
+
+    .hero p {
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero {
+        min-height: 150px;
+        padding: 20px 15px;
+    }
+
+    .hero h1 {
+        font-size: 1.4rem;
+    }
+
+    .hero p {
+        font-size: 0.9rem;
+    }
 }
 
 /* Content */
@@ -148,18 +183,41 @@ nav {
 
 .card {
     background: #ffe8d7;
-    padding: 12px;
+    padding: 0;
     border-radius: 5px;
     box-shadow: 0 0 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .card img {
     width: 100%;
-    border-radius: 4px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 0;
+}
+
+.card a {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 12px;
 }
 
 .card h3 {
-    margin: 12px 0 8px;
+    margin: 0 0 8px 0;
+    color: #222;
+    font-size: 1.1rem;
+}
+
+.card p {
+    color: #555;
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
 }
 
 /* Latest */
