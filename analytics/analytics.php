@@ -422,7 +422,52 @@ button:hover {
                                                         }
                                                         echo htmlspecialchars($locDisplay);
                                                     ?></p>
-                                    <p><strong>Files:</strong> <?php echo !empty($risk['arrayStringNumeFisiere']) ? htmlspecialchars(implode(', ', (array)$risk['arrayStringNumeFisiere'])) : 'None'; ?></p>
+                                    <p><strong>Files:</strong><br>
+                                        <?php
+                                        $files = (array)($risk['arrayStringNumeFisiere'] ?? []);
+                                        if (empty($files)) {
+                                            echo ' None';
+                                        } else {
+                                            $first = true;
+                                            foreach ($files as $f) {
+                                                // Determine URL and label
+                                                $url = '';
+                                                $label = '';
+                                                if (is_array($f)) {
+                                                    // common keys
+                                                    if (!empty($f['href'])) $url = $f['href'];
+                                                    elseif (!empty($f['url'])) $url = $f['url'];
+                                                    elseif (!empty($f['path'])) $url = $f['path'];
+                                                    $label = $f['name'] ?? $f['filename'] ?? basename((string)$url);
+                                                } else {
+                                                    $url = (string)$f;
+                                                    $label = basename($url) ?: $url;
+                                                }
+
+                                                $safeUrl = htmlspecialchars($url);
+                                                $safeLabel = htmlspecialchars($label);
+
+                                                if (!$first) echo ' ';
+                                                // If url looks like a relative path or starts with http, create download link
+                                                if ($url !== '') {
+                                                    // If absolute URL (http/https) or root-absolute path, use it as-is.
+                                                    if (preg_match('#^https?://#i', $url) || strpos($url, '/') === 0) {
+                                                        $href = $url;
+                                                    } else {
+                                                        // Local filename — serve from uploads folder one level up
+                                                        $href = '../uploads/' . ltrim($url, './\\');
+                                                    }
+                                                    $safeHref = htmlspecialchars($href);
+                                                    echo "<a href=\"{$safeHref}\" download style=\"color:#c5a059;text-decoration:underline;\">{$safeLabel}</a><br>";
+                                                } else {
+                                                    echo $safeLabel;
+                                                }
+
+                                                $first = false;
+                                            }
+                                        }
+                                        ?>
+                                    </p>
                                 </div>
                                 <div class="risk-timestamps">
                                     <small>Created: <?php echo htmlspecialchars($risk['createdAt'] ?? 'N/A'); ?></small><br>
