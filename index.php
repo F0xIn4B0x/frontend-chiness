@@ -11,7 +11,7 @@
 
     <!-- Navigation -->
     <header class="navbar">
-        <div class="logo">LET US FIND</div>
+        <div class="logo">MANDARINA DECOJITA PRESS</div>
 
         <!-- Mobile Menu Button -->
         <div class="menu-toggle" id="menuToggle">☰</div>
