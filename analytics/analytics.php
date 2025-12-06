@@ -82,6 +82,36 @@ foreach ($locationsItems as $loc) {
         $locationsById[$loc['id']] = $loc;
     }
 }
+// Fetch weather for Cluj-Napoca (server-side)
+$weather = [];
+$weatherError = null;
+try {
+    $clujLat = '46.7712';
+    $clujLon = '23.6236';
+    $weatherEndpoint = 'https://api.open-meteo.com/v1/forecast?latitude=' . $clujLat . '&longitude=' . $clujLon . '&current_weather=true&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m';
+    $chW = curl_init($weatherEndpoint);
+    curl_setopt($chW, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($chW, CURLOPT_TIMEOUT, 5);
+    curl_setopt($chW, CURLOPT_CONNECTTIMEOUT, 5);
+    $weatherRaw = curl_exec($chW);
+    $curlErrW = curl_error($chW);
+    $weatherHttpCode = curl_getinfo($chW, CURLINFO_HTTP_CODE);
+    curl_close($chW);
+    if ($curlErrW) {
+        throw new Exception('cURL error: ' . $curlErrW);
+    }
+    if ($weatherHttpCode < 200 || $weatherHttpCode >= 300) {
+        throw new Exception('HTTP ' . $weatherHttpCode . ' from ' . $weatherEndpoint);
+    }
+    if (!empty($weatherRaw)) {
+        $parsedWeather = json_decode($weatherRaw, true);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            $weather = $parsedWeather;
+        }
+    }
+} catch (Exception $e) {
+    $weatherError = $e->getMessage();
+}
 // Read filter values from GET and prepare PHP-side filtered array
 $selectedType = $_GET['typerisk'] ?? '';
 $selectedSatRel = isset($_GET['satrel']) ? $_GET['satrel'] : '';
@@ -142,6 +172,17 @@ body {
     gap: 20px;
     align-items: center;
 }
+
+/* --- Weather Widget --- */
+.weather-info {
+    font-size: 0.95em;
+    color: #f3e5ab;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.weather-info .temp { font-weight: 700; color: #c5a059; }
+.weather-info .small { font-size: 0.85em; color: #ddd; }
 
 .user-info {
     font-size: 0.95em;
@@ -331,6 +372,17 @@ button:hover {
             <div class="user-info">
                 <strong><?php echo htmlspecialchars($userName); ?></strong> (<?php echo htmlspecialchars($userSector); ?>) 
                 <br><small>Logged in: <?php echo htmlspecialchars($loginTime); ?></small>
+            </div>
+            <div class="weather-info">
+                <?php if (!empty($weather['current_weather'])): ?>
+                    <?php $cw = $weather['current_weather']; ?>
+                    <div class="temp"><?php echo htmlspecialchars($cw['temperature'] . '°C'); ?></div>
+                    <div class="small">Wind: <?php echo htmlspecialchars($cw['windspeed'] . ' km/h'); ?></div>
+                <?php elseif (!empty($weatherError)): ?>
+                    <div class="small">Weather error</div>
+                <?php else: ?>
+                    <div class="small">Weather: n/a</div>
+                <?php endif; ?>
             </div>
             <a href="logout.php" class="btn-logout">Logout</a>
             <a href="/" class="btn-home">← Back to Dashboard</a>
