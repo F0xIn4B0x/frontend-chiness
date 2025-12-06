@@ -19,7 +19,7 @@
         <nav id="navMenu">
             <ul>
                 <li><a href="#">Acasa</a></li>
-                <li><a href="#">Jurnalisti</a></li>
+                <li><a href="journalism/login.php">Jurnalisti</a></li>
                 <li><a href="#">Date Analitice</a></li>
                 <li><a href="#">Login</a></li>
                 <li><a href="#">Despre Noi</a></li>
@@ -43,23 +43,42 @@
         <section class="featured">
             <h2>Top Stories</h2>
             <div class="grid">
-                <article class="card">
-                    <img src="https://via.placeholder.com/400x250" alt="">
-                    <h3>Story Title One</h3>
-                    <p>Short summary of this article goes here.</p>
-                </article>
+                <?php
+                // Load all PHP files from the `articles` folder and render a card for each.
+                $articleFiles = glob(__DIR__ . '/articles/*.php');
 
-                <article class="card">
-                    <img src="https://via.placeholder.com/400x250" alt="">
-                    <h3>Story Title Two</h3>
-                    <p>Short summary of this article goes here.</p>
-                </article>
+                // Optional: sort by modification time (newest first)
+                usort($articleFiles, function ($a, $b) {
+                    return filemtime($b) <=> filemtime($a);
+                });
 
-                <article class="card">
-                    <img src="https://via.placeholder.com/400x250" alt="">
-                    <h3>Story Title Three</h3>
-                    <p>Short summary of this article goes here.</p>
-                </article>
+                foreach ($articleFiles as $file) {
+                    // Include the article inside a function scope so variables from the
+                    // included file don't leak into the global scope. Each article
+                    // file should set variables like $title, $summary, $image, $link.
+                    $article = (function ($path) {
+                        $title = $summary = $image = $link = null;
+                        include $path;
+                        return compact('title', 'summary', 'image', 'link');
+                    })($file);
+
+                    $title = $article['title'] ?? 'Untitled Story';
+                    $summary = $article['summary'] ?? '';
+                    $image = $article['image'] ?? 'https://via.placeholder.com/400x250';
+                    $link = $article['link'] ?? '#';
+                    ?>
+
+                    <article class="card">
+                        <a href="<?php echo htmlspecialchars($link); ?>">
+                            <img src="<?php echo htmlspecialchars($image); ?>" alt="">
+                            <h3><?php echo htmlspecialchars($title); ?></h3>
+                            <p><?php echo htmlspecialchars($summary); ?></p>
+                        </a>
+                    </article>
+
+                <?php
+                }
+                ?>
             </div>
         </section>
 
