@@ -11,10 +11,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Hardcoded credentials per request
     if ($username === 'recorder' && $password === 'fujitsu') {
-        // successful — set session flag and redirect to postcreate.php (same folder)
+        // successful — set session flag, store profile, and redirect to profile page
         $_SESSION['journalist_logged'] = true;
         $_SESSION['journalist_user'] = $username;
-        header('Location: postcreate.php');
+        // Store profile info (expand as needed)
+        $_SESSION['journalist_profile'] = [
+            'username' => $username,
+            'name' => 'Recorder Staff', // You can customize or fetch real name here
+        ];
+        header('Location: profile.php');
         exit;
     } else {
         $errorMsg = 'Invalid credentials. Please try again.';
@@ -58,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <button type="submit">Logare</button>
         </form>
+        
 
         <div class="footer-link" style="margin-top:10px;">
             <a href="login-companie.php">Reprezentați o persoană juridică? Accesați portalul dedicat aici.</a>
