@@ -1,0 +1,133 @@
+
+
+body {
+    /* Același font modern ca în fișierul tău */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    
+    /* Același fundal negru */
+    background-color: #0f0f0f; 
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    
+    /* Textul crem păstrat */
+    color: #f3e5ab; 
+}
+
+.login-container {
+    background-color: #1a1a1a; /* Același card negru cărbune */
+    padding: 45px 40px;
+    border-radius: 12px;
+    width: 320px;
+    
+    /* SCHIMBARE: Accent Auriu în loc de Portocaliu */
+    border-top: 4px solid #c5a059; 
+    
+    border-bottom: 1px solid #333;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+h2 {
+    text-align: center;
+    color: #f3e5ab;
+    margin-bottom: 35px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+/* Input-uri identice cu fișierul tău */
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 14px;
+    background-color: #252525;
+    border: 1px solid #333;
+    border-radius: 6px;
+    color: #f3e5ab;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    /* SCHIMBARE: Focus Auriu */
+    border-color: #c5a059; 
+    background-color: #2a2a2a;
+    box-shadow: 0 0 8px rgba(197, 160, 89, 0.2);
+    outline: none;
+}
+
+input::placeholder {
+    color: #666;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    
+    /* SCHIMBARE: Buton Auriu */
+    background-color: #c5a059; 
+    
+    color: #000000;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 15px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+button:hover {
+    /* Auriu puțin mai închis la hover */
+    background-color: #b08d55; 
+    transform: translateY(-2px);
+}
+
+/* Link-ul de jos */
+.footer-link {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 13px;
+}
+
+.footer-link a {
+    color: #999;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-link a:hover {
+    color: #c5a059; /* Hover auriu */
+}
+
+/* Mesaje de eroare/succes */
+.mesaj-box {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 14px;
+    display: none;
+}
+
+.mesaj-box.error {
+    background-color: rgba(255, 107, 107, 0.1);
+    border: 1px solid rgba(255, 107, 107, 0.2);
+    color: #ff6b6b;
+}
+
+.mesaj-box.success {
+    background-color: rgba(46, 204, 113, 0.1);
+    border: 1px solid rgba(46, 204, 113, 0.2);
+    color: #2ecc71;
+}

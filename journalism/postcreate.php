@@ -116,6 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $riskCategory = $_POST['riskCategory'] ?? '';
 
     // Process PDF uploads (up to 10 files)
+    $uploadsDir = __DIR__ . '/../uploads';
     $savedFiles = [];
     $uploadResults = [];
     if (!empty($_FILES['pdf_files'])) {
@@ -142,11 +143,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // Temporarily override $_FILES for savePdfUpload
             $_FILES['pdf_file'] = $singleFile;
-            $result = savePdfUpload('pdf_file', ['upload_dir' => __DIR__ . '/../uploads', 'max_size' => 15 * 1024 * 1024]);
+            $result = savePdfUpload('pdf_file', ['upload_dir' => $uploadsDir, 'max_size' => 15 * 1024 * 1024]);
             $uploadResults[] = $result;
             
             if (!empty($result['success'])) {
-                $savedFiles[] = $result['filename'];
+                // Store full absolute path for the PDF file
+                $fullPath = $uploadsDir . DIRECTORY_SEPARATOR . $result['filename'];
+                $savedFiles[] = $fullPath;
             }
         }
     }
@@ -176,8 +179,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $dest = rtrim($imagesDir, '/\\') . DIRECTORY_SEPARATOR . $uniqueImg;
                     if (move_uploaded_file($img['tmp_name'], $dest)) {
                         @chmod($dest, 0644);
-                        // Use root-relative path so article pages under /journalism/ resolve correctly
-                        $image = '/articles/src/' . $uniqueImg;
+                        // Store full absolute path for the image
+                        $image = $dest;
                         $uploadResults[] = ['success' => true, 'message' => 'Image uploaded successfully.', 'filename' => $uniqueImg, 'type' => 'image'];
                     } else {
                         $uploadResults[] = ['success' => false, 'message' => 'Failed to move uploaded image.', 'type' => 'image'];
@@ -211,23 +214,115 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $content .= "// Generated article file\n";
         $content .= "\$title = " . var_export($title, true) . ";\n";
         $content .= "\$summary = " . var_export($summary, true) . ";\n";
-        $content .= "\$image = " . var_export($image, true) . ";\n";
+        $content .= "\$image = " . var_export($image, true) . "; // Full absolute path\n";
         $content .= "\$link = " . var_export($link, true) . ";\n";
         $content .= "\$body = " . var_export($mainText, true) . ";\n";
+        $content .= "\$files = " . var_export($savedFiles, true) . "; // Full absolute paths to PDF files\n";
         $content .= "?>\n";
 
         // Write file (overwrite if exists)
         $written = file_put_contents($filePath, $content) !== false;
     }
 
-    // Prepare payload for API
+    // Determine the risk value string expected by the DB validation
+    // Use the options fetched from the API (`$categoryOptions`) as the canonical list.
+    $riskValue = $riskCategory; // fallback to whatever was submitted
+    foreach ($categoryOptions as $opt) {
+        $optId = (string)($opt['id'] ?? $opt['val'] ?? '');
+        $optName = $opt['name'] ?? $opt['label'] ?? $opt['val'] ?? $optId;
+        if ($optId !== '' && (string)$optId === (string)$riskCategory) {
+            $riskValue = $optName;
+            break;
+        }
+    }
+
+    // Build canonical list from fetched category options
+    $availableRiskNames = [];
+    foreach ($categoryOptions as $opt) {
+        $name = $opt['name'] ?? $opt['label'] ?? $opt['val'] ?? ($opt['id'] ?? '');
+        if ($name !== null) { $availableRiskNames[] = $name; }
+    }
+
+    // Normalizer: lowercase, remove non-alphanumeric except underscore and space
+    $normalize = function($s) {
+        $s = trim((string)$s);
+        $s = preg_replace('/[\\t\\n\\r]+/', ' ', $s);
+        $s = preg_replace('/[^A-Za-z0-9_ ]+/', '', $s);
+        $s = strtolower($s);
+        return $s;
+    };
+
+    // Try exact match first, then normalized match against fetched names
+    $matched = null;
+    foreach ($availableRiskNames as $canon) {
+        if ($riskValue === $canon) { $matched = $canon; break; }
+    }
+    if ($matched === null) {
+        $normInput = $normalize($riskValue);
+        foreach ($availableRiskNames as $canon) {
+            if ($normalize($canon) === $normInput) { $matched = $canon; break; }
+        }
+    }
+
+    if ($matched !== null) {
+        $riskValue = $matched; // use canonical string from API
+    } else {
+        // No match - stop and show error to avoid API rejection
+        $apiStatus = ['success' => false, 'message' => 'Selected risk ("' . htmlspecialchars($riskValue) . '") is not a valid risk according to the current API values.'];
+        $formResult = [
+            'written' => $written ?? false,
+            'article_path' => ($written ?? false) ? ('articles/' . $fileName) : null,
+            'upload' => $uploadResult,
+            'api_status' => $apiStatus,
+        ];
+        goto RENDER;
+    }
+
+    // Prepare payload for API. Send both the id (if available) and the string value
+    // which matches the database `isIn` validation. This helps the API map/verify.
+    // Note: the API example expects filenames (e.g. "aaao.jpg"), not absolute paths.
+    $apiFiles = [];
+    foreach ($savedFiles as $sf) {
+        // savedFiles may contain absolute paths for local storage; send basename to API
+        $apiFiles[] = is_string($sf) ? basename($sf) : $sf;
+    }
+
+    // Ensure id is numeric when possible; many backends expect numeric FK ids.
+    $typeRiskIdValue = is_numeric($riskCategory) ? (int)$riskCategory : $riskCategory;
+
+    // Build payload. Include multiple fallback keys for the risk string in case
+    // the API expects a different field name (`risk`, `type`, `typeRisk`, etc.).
     $payload = [
         'info' => $mainText,
-        'satRel' => $locationId,
-        // 'type_risk' should be the chosen risk id (validate below)
-        'type_risk' => $riskCategory,
-        'arrayStringNumeFisiere' => $savedFiles,
+        'satRel' => is_numeric($locationId) ? (int)$locationId : $locationId,
+        // Try sending the numeric ID for the risk as the primary value
+        'typerisk' => $typeRiskIdValue,
+        'type_risk_id' => $typeRiskIdValue,
+        'type_risk_name' => $riskValue,                  // keep canonical name for compatibility
+        'arrayStringNumeFisiere' => $apiFiles,
+
+        // Fallback compatibility keys (include both id and name where useful)
+        'risk' => $typeRiskIdValue,
+        'type' => $typeRiskIdValue,
+        'typeRisk' => $typeRiskIdValue,
+        'risk_name' => $riskValue,
     ];
+
+    // Re-fetch options from API right before validation to avoid stale data
+    try {
+        $locationOptions = fetchOptionsFromApi($locationsEndpoint);
+        $categoryOptions = fetchOptionsFromApi($risksValEndpoint);
+    } catch (Exception $e) {
+        $apiStatus = ['success' => false, 'message' => 'Unable to refresh validation lists: ' . $e->getMessage()];
+        $formResult = [
+            'written' => $written ?? false,
+            'article_path' => ($written ?? false) ? ('articles/' . $fileName) : null,
+            'upload' => $uploadResult,
+            'api_status' => $apiStatus,
+        ];
+        // Stop further processing so we don't send invalid data
+        goto RENDER;
+    }
 
     // Validate selected location and risk against fetched options
     $validLocation = false;
@@ -250,7 +345,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        $payloadJson = json_encode($payload, JSON_UNESCAPED_SLASHES);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payloadJson);
         $apiResp = curl_exec($ch);
         $apiErr = curl_error($ch) ?: null;
         $apiCode = curl_getinfo($ch, CURLINFO_HTTP_CODE) ?: null;
@@ -261,16 +357,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($apiResp) {
             $decoded = json_decode($apiResp, true);
         }
+        // Build detailed apiStatus including payload and raw response for debugging
         if ($apiErr) {
-            $apiStatus = ['success' => false, 'message' => 'API connection error: ' . $apiErr];
+            $apiStatus = ['success' => false, 'message' => 'API connection error: ' . $apiErr, 'payload' => $payloadJson, 'response_raw' => $apiResp, 'http_code' => $apiCode];
         } elseif ($apiCode && $apiCode >= 400) {
-            $apiStatus = ['success' => false, 'message' => 'API error HTTP ' . $apiCode];
+            $apiStatus = ['success' => false, 'message' => 'API error HTTP ' . $apiCode, 'payload' => $payloadJson, 'response_raw' => $apiResp, 'http_code' => $apiCode];
         } elseif (is_array($decoded) && isset($decoded['status'])) {
             // API returns structured object
-            $apiStatus = ['success' => (bool)$decoded['status'], 'message' => isset($decoded['content']) ? (is_string($decoded['content']) ? $decoded['content'] : json_encode($decoded['content'])) : $apiResp];
+            $apiStatus = ['success' => (bool)$decoded['status'], 'message' => isset($decoded['content']) ? (is_string($decoded['content']) ? $decoded['content'] : json_encode($decoded['content'])) : $apiResp, 'payload' => $payloadJson, 'response_raw' => $apiResp, 'decoded' => $decoded, 'http_code' => $apiCode];
         } else {
             // Fallback: treat any HTTP 200 as success
-            $apiStatus = ['success' => true, 'message' => 'API responded: ' . ($apiResp ?: 'OK')];
+            $apiStatus = ['success' => true, 'message' => 'API responded: ' . ($apiResp ?: 'OK'), 'payload' => $payloadJson, 'response_raw' => $apiResp, 'http_code' => $apiCode];
         }
     }
 
@@ -281,6 +378,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'api_status' => $apiStatus,
     ];
 }
+RENDER:
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -525,6 +623,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <?php $s = $formResult['api_status']; ?>
                     <span id="apiStatus" style="margin-left:12px;color:<?php echo $s['success'] ? '#155724' : '#721c24'; ?>;background:<?php echo $s['success'] ? '#d4edda' : '#f8d7da'; ?>;padding:8px;border-radius:6px;border:1px solid <?php echo $s['success'] ? '#c3e6cb' : '#f5c6cb'; ?>;font-weight:bold;display:inline-block;opacity:1;transition:opacity .6s ease;"><?php echo htmlspecialchars($s['message'] ?? ''); ?></span>
                 <?php endif; ?>
+                        <?php if (!empty($s['payload']) || !empty($s['response_raw']) || !empty($s['decoded'])): ?>
+                            <div style="margin-top:10px;">
+                                <details style="font-size:0.9em;">
+                                    <summary>Debug: payload & response</summary>
+                                    <?php if (!empty($s['payload'])): ?>
+                                        <div><strong>Payload sent:</strong></div>
+                                        <pre style="background:#f7f7f7;padding:8px;border-radius:4px;max-height:200px;overflow:auto;"><?php echo htmlspecialchars($s['payload']); ?></pre>
+                                    <?php endif; ?>
+                                    <?php if (!empty($s['response_raw'])): ?>
+                                        <div><strong>Response raw:</strong></div>
+                                        <pre style="background:#f0f0f0;color:#111;padding:8px;border-radius:4px;max-height:300px;overflow:auto;"><?php echo htmlspecialchars($s['response_raw']); ?></pre>
+                                    <?php endif; ?>
+                                    <?php if (!empty($s['decoded'])): ?>
+                                        <div><strong>Response decoded:</strong></div>
+                                        <pre style="background:#eef;padding:8px;border-radius:4px;max-height:300px;overflow:auto;"><?php echo htmlspecialchars(json_encode($s['decoded'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)); ?></pre>
+                                    <?php endif; ?>
+                                </details>
+                            </div>
+                        <?php endif; ?>
             </div>
         </form>
     </div>
