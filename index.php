@@ -89,7 +89,7 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <p>&copy; 2025 Daily Report. All rights reserved.</p>
+        <p>&copy; 2025 Mandarina Decojita.</p>
     </footer>
 
     <script>
