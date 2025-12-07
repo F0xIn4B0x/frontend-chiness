@@ -288,24 +288,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create New Post - Infrastructure Gap</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: Arial, sans-serif;
-            background: #eef1f5; /* Light, editorial background */
+            background: #ffddc3; /* Light, editorial background */
             padding: 30px 0;
             line-height: 1.6;
         }
         .container {
             max-width: 900px;
             margin: 0 auto;
-            background-color: #eef1f5; /* White content base */
+            background-color: #ffefe2ff; 
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             padding: 40px;
         }
         .header {
-            border-bottom: 2px solid #ddd;
+            border-bottom: 2px solid #DD2200;
             padding-bottom: 20px;
             margin-bottom: 30px;
             display: flex;
@@ -313,16 +316,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             align-items: center;
         }
         h1 {
-            color: #2c3e50;
+            color: #111;
             font-size: 1.8em;
         }
         .btn-back {
             text-decoration: none;
-            color: #555;
+            color: #DD2200;
             padding: 8px 15px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            transition: background 0.2s;
+            transition: 0.2s;
         }
         .btn-back:hover {
             background: #f0f0f0;

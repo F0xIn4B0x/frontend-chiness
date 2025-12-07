@@ -39,42 +39,56 @@ if (!$title) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($title); ?> - Daily Report</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <nav class="navbar">
+        <div class="logo">MANDARINA DESCOJITĂ PRESS</div>
+        <img src="logo.png" alt="logo" />
+        </div>
+    </nav>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Georgia', 'Times New Roman', serif;
-            background: #f5f5f5;
+            font-family: Arial, sans-serif;
+            background: #ffddc3;
             color: #1a1a1a;
             line-height: 1.7;
         }
         
         /* Navigation */
-        .navbar {
-            background: #2c3e50;
-            padding: 15px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+    .navbar {
+    background: #DD2200;
+    color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+}
+
+.logo {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+/* header logo (sibling <img> in .navbar) */
+.navbar img {
+    height: 50px;       /* desired visible height */
+    width: auto;        /* preserve aspect ratio */
+    max-height: 60px;   /* caps on very large images */
+    object-fit: contain;
+    margin-right: 900px; /* space between logo and site title */
+
+}
         .navbar-content {
-            max-width: 900px;
+            max-width: 500px;
             margin: 0 auto;
             padding: 0 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .navbar a {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1.2em;
-        }
-        .navbar a:hover {
-            color: #e74c3c;
-        }
-        
         .container {
             max-width: 900px;
             margin: 40px auto;
@@ -85,7 +99,7 @@ if (!$title) {
         }
         
         .article-header {
-            border-bottom: 3px solid #e74c3c;
+            border-bottom: 3px solid #DD2200;
             padding-bottom: 30px;
             margin-bottom: 40px;
         }
@@ -142,14 +156,14 @@ if (!$title) {
         .article-divider {
             border: none;
             height: 2px;
-            background: linear-gradient(to right, transparent, #e74c3c, transparent);
+            background: linear-gradient(to right, transparent, #DD2200, transparent);
             margin: 40px 0;
         }
         
         .article-files {
             background: #f9f9f9;
             padding: 25px;
-            border-left: 4px solid #e74c3c;
+            border-left: 4px solid #DD2200;
             margin-top: 40px;
             border-radius: 4px;
         }
@@ -202,16 +216,16 @@ if (!$title) {
             align-items: center;
             gap: 8px;
             padding: 12px 24px;
-            background: #e74c3c;
+            background: #DD2200;
             color: white;
             text-decoration: none;
             border-radius: 4px;
-            transition: background 0.2s;
+            transition: 0.2s;
             font-weight: 500;
         }
         
         .btn-back:hover, .btn-top:hover {
-            background: #c0392b;
+            background: #ff2600ff;
         }
         
         /* Responsive */
@@ -231,21 +245,16 @@ if (!$title) {
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="navbar-content">
-            <a href="../index.php">📰 Daily Report</a>
-            <span style="color: #bbb;">News & Analysis</span>
-        </div>
-    </nav>
+    
+
 
     <div class="container">
         <article>
             <header class="article-header">
                 <h1><?php echo htmlspecialchars($title); ?></h1>
                 <div class="article-meta">
-                    <span>📅 Published on <?php echo date('F j, Y', filemtime($articleFile)); ?></span>
-                    <span>📌 Article ID: <code><?php echo htmlspecialchars($slug); ?></code></span>
+                    <span>Published on <?php echo date('F j, Y', filemtime($articleFile)); ?></span>
+                    <span>Article ID: <code><?php echo htmlspecialchars($slug); ?></code></span>
                 </div>
             </header>
 
@@ -261,12 +270,12 @@ if (!$title) {
 
             <?php if (!empty($files) && is_array($files)): ?>
                 <div class="article-files">
-                    <h3>📎 Attached Documents</h3>
+                    <h3> Attached Documents</h3>
                     <ul class="file-list">
                         <?php foreach ($files as $filename): ?>
                             <li>
                                 <a href="<?php echo htmlspecialchars('../uploads/' . rawurlencode($filename)); ?>" target="_blank">
-                                    📄 <?php echo htmlspecialchars($filename); ?>
+                                    <?php echo htmlspecialchars($filename); ?>
                                 </a>
                             </li>
                         <?php endforeach; ?>

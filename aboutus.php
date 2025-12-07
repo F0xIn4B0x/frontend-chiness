@@ -4,23 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Despre Noi – Mandarina Decojita Press</title>
+    <title>Despre Noi – Mandarina Descojită Press</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
 </head>
 
 <body>
 
     <!-- Navigation -->
     <header class="navbar">
-        <div class="logo">MANDARINA DECOJITA PRESS</div>
+        <div class="logo">MANDARINA DESCOJITĂ PRESS</div>
+        <img src="logo.png" alt="logo" />
 
         <!-- Mobile Menu Button -->
         <div class="menu-toggle" id="menuToggle">☰</div>
 
         <nav id="navMenu">
             <ul>
-                <li><a href="/">Acasa</a></li>
-                <li><a href="journalism/login.php">Jurnalisti</a></li>
+                <li><a href="/">Acasă</a></li>
+                <li><a href="journalism/login.php">Jurnaliști</a></li>
                 <li><a href="#">Date Analitice</a></li>
                 <li><a href="aboutus.php">Despre Noi</a></li>
             </ul>
@@ -31,7 +36,7 @@
     <section class="hero about-hero">
         <div class="hero-content">
             <h1>Cine Suntem Noi?</h1>
-            <p> </p>
+            <p></p>
         </div>
     </section>
 
@@ -55,23 +60,31 @@
             <h2>Valorile Noastre</h2>
             <div class="grid about-grid">
                 <div class="card">
+                    <br></br>
                     <h3>Integritate</h3>
                     <p>Respectăm adevărul și principiile jurnalismului profesionist.</p>
-                </div>
+                    <br></br>
+                    </div>
 
                 <div class="card">
+                    <br></br>
                     <h3>Transparență</h3>
-                    <p>Oferim informații clare, verificabile și ușor de înțeles.</p>
+                    <p>Oferim informații verificabile și ușor de înțeles.</p>
+                    <br></br>
                 </div>
 
                 <div class="card">
+                    <br></br>
                     <h3>Corectitudine</h3>
                     <p>Relatăm faptele echilibrat, fără influențe externe.</p>
+                    <br></br>
                 </div>
 
                 <div class="card">
+                    <br></br>
                     <h3>Responsabilitate</h3>
                     <p>Înțelegem impactul informației și tratăm fiecare subiect cu seriozitate.</p>
+                    <br></br>
                 </div>
             </div>
         </section>
@@ -80,24 +93,37 @@
         <section class="featured">
              <br></br>
             <h2>Echipa Noastră</h2>
-
+            <br></br>
             <div class="grid team-grid">
+
                 <div class="card team-card">
-                    <img src="https://via.placeholder.com/300x300" alt="">
-                    <h3>Andrei Popescu</h3>
-                    <p>Redactor Șef</p>
+                    <img src="il.jpeg" alt="">
+                    <b>Rodilă Ilinca</b>
+                    <p>Frontend, Șofer</p>
                 </div>
 
                 <div class="card team-card">
-                    <img src="https://via.placeholder.com/300x300" alt="">
-                    <h3>Maria Ionescu</h3>
-                    <p>Editor Politic</p>
+                    <img src="is.jpeg" alt="">
+                    <b>Silaghi Iasmina</b>
+                    <p>Frontend</p>
                 </div>
 
                 <div class="card team-card">
-                    <img src="https://via.placeholder.com/300x300" alt="">
-                    <h3>Alex Dinu</h3>
-                    <p>Reporter Investigații</p>
+                    <img src="rm.jpeg" alt="">
+                    <b>Illyeș Remus</b>
+                    <p>Pitch, Business</p>
+                </div>
+
+                 <div class="card team-card">
+                    <img src="mk.jpeg" alt="">
+                    <b>Mekker David</b>
+                    <p>Team Leader, Backend</p>
+                </div>
+
+                <div class="card team-card">
+                    <img src="sz.jpeg" alt="">
+                    <b>Balint Szabolcs</b>
+                    <p>Backend</p>
                 </div>
             </div>
         </section>
@@ -106,7 +132,7 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <p>&copy; 2025 Mandarina Decojita.</p>
+        <p>&copy; 2025 Mandarina Descojită.</p>
     </footer>
 
     <script>
