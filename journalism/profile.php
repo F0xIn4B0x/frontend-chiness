@@ -40,6 +40,8 @@ if (is_dir($articlesDir)) {
         .article-count { font-size: 1.2em; color: #e74c3c; font-weight: bold; }
         .btn { display: inline-block; margin-top: 20px; padding: 10px 20px; background: #e74c3c; color: #fff; border: none; border-radius: 6px; text-decoration: none; font-weight: bold; transition: background 0.2s; }
         .btn:hover { background: #c0392b; }
+        .btn-logout { background: #ccc; color: #333; }
+        .btn-logout:hover { background: #e67e22; color: #fff; }
     </style>
 </head>
 <body>
@@ -53,7 +55,7 @@ if (is_dir($articlesDir)) {
             <p>You have published <span class="article-count"><?php echo $articleCount; ?></span> article<?php echo $articleCount === 1 ? '' : 's'; ?>.</p>
         </div>
         <a href="postcreate.php" class="btn">Create New Article</a>
-        <a href="../index.php" class="btn" style="background:#ccc;color:#333;margin-left:10px;">Home</a>
+        <a href="logout.php" class="btn btn-logout" style="margin-left:10px;">Logout</a>
     </div>
 </body>
 </html>
