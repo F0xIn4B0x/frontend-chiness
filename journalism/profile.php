@@ -86,7 +86,7 @@ if (is_dir($articlesDir)) {
             <p>You have published <span class="article-count"><?php echo $articleCount; ?></span> article<?php echo $articleCount === 1 ? '' : 's'; ?>.</p>
         </div>
         <a href="postcreate.php" class="btn">Create New Article</a>
-        <a href="../index.php" class="btn" style="background:#ccc;color:#333;margin-left:10px;">Home</a>
+        <a href="logout.php" class="btn btn-logout" style="margin-left:10px;">Logout</a>
     </div>
 </body>
 </html>
