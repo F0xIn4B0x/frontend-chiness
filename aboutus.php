@@ -43,56 +43,81 @@
     <main class="content">
 
         <!-- Mission -->
-        <section class="featured">
-            <h2>Misiunea Noastră</h2>
-            <div class="about-block">
-                <p>
-                    Suntem o echipă de jurnaliști pasionați, care luptă zilnic pentru transparență,
-                    corectitudine și informarea publicului. Credem într-o presă liberă, neafiliată politic,
-                    dedicată interesului public.
-                </p>
-            </div>
-        </section>
+<section class="featured">
+    <h2>Misiunea Noastră</h2>
+    <div class="about-block">
+        <p>
+            <strong>MANDARINA DESCOJITĂ PRESS</strong> este o platformă de jurnalism investigativ apolitic dedicată protejării societății românești de la alunecarea spre dezastru.
+            Ne concentrăm pe expunerea lipsurilor critice din infrastructură, a deficiențelor din sistemele de prevenție și a problemelor majore care afectează în special comunitățile defavorizate ale țării.
+        </p>
 
-        <!-- Values -->
-        <section class="featured">
-            <br></br>
-            <h2>Valorile Noastre</h2>
-            <div class="grid about-grid">
-                <div class="card">
-                    <br></br>
-                    <h3>Integritate</h3>
-                    <p>Respectăm adevărul și principiile jurnalismului profesionist.</p>
-                    <br></br>
-                    </div>
+        <p>
+            Credem că adevărul expus transparent și responsabil poate salva vieți. Documentăm probleme reale,
+            semnalăm riscurile ignorate și oferim date clare care să susțină luarea unor decizii informate —
+            atât de către cetățeni, cât și de către instituțiile responsabile.
+        </p>
 
-                <div class="card">
-                    <br></br>
-                    <h3>Transparență</h3>
-                    <p>Oferim informații verificabile și ușor de înțeles.</p>
-                    <br></br>
-                </div>
+        <p>
+            Ne ghidăm după un singur principiu: <em>interesul public</em> — fără agende politice, fără manipulări,
+            fără compromisuri. De aceea ne inspirăm din rigoarea și etica publicațiilor independente din România,
+            precum Recorder și Snoop, suntem deschiși să colaborăm cu redacții și jurnaliști care împărtășesc
+            aceleași valori și aceeași responsabilitate față de societate.
+        </p>
 
-                <div class="card">
-                    <br></br>
-                    <h3>Corectitudine</h3>
-                    <p>Relatăm faptele echilibrat, fără influențe externe.</p>
-                    <br></br>
-                </div>
+        <p>
+            Prin investigații solide și implicare directă în comunități, lucrăm pentru o Românie mai sigură,
+            mai transparentă și mai pregătită să prevină tragediile ce pot fi evitate.
+        </p>
+    </div>
+</section>
 
-                <div class="card">
-                    <br></br>
-                    <h3>Responsabilitate</h3>
-                    <p>Înțelegem impactul informației și tratăm fiecare subiect cu seriozitate.</p>
-                    <br></br>
-                </div>
-            </div>
-        </section>
+<!-- Values -->
+<section class="featured">
+    <h2>Valorile Noastre</h2>
+
+    <div class="grid about-grid">
+
+        <div class="card">
+            <h3>Integritate</h3>
+            <p>
+                Ne ghidăm exclusiv după interesul public. Adevărul, etica și corectitudinea
+                sunt fundamentul fiecărei investigații pe care o realizăm.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Transparență</h3>
+            <p>
+                Punem la dispoziția societății date clare, verificabile și ușor de urmărit,
+                astfel încât realitatea despre infrastructură, riscuri și lipsuri să nu mai
+                poată fi ascunsă.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Corectitudine</h3>
+            <p>
+                Suntem independenți și apolitici. Prezentăm faptele exact așa cum sunt,
+                fără influențe, fără presiuni și fără compromisuri.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Responsabilitate</h3>
+            <p>
+                Înțelegem că informarea poate salva vieți. De aceea tratăm fiecare subiect,
+                în special din zonele defavorizate, cu seriozitate și cu dorința reală
+                de a preveni tragedii.
+            </p>
+        </div>
+
+    </div>
+</section>
 
         <!-- Team -->
         <section class="featured">
              <br></br>
-            <h2>Echipa Noastră</h2>
+            <h2>Echipa tehnică</h2>
             <br></br>
             <div class="grid team-grid">
 

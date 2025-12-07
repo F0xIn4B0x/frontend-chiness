@@ -267,21 +267,6 @@ if (!$title) {
             </div>
 
             <hr class="article-divider">
-
-            <?php if (!empty($files) && is_array($files)): ?>
-                <div class="article-files">
-                    <h3> Attached Documents</h3>
-                    <ul class="file-list">
-                        <?php foreach ($files as $filename): ?>
-                            <li>
-                                <a href="<?php echo htmlspecialchars('../uploads/' . rawurlencode($filename)); ?>" target="_blank">
-                                    <?php echo htmlspecialchars($filename); ?>
-                                </a>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-            <?php endif; ?>
             <div class="footer-nav">
                 <a href="../index.php" class="btn-back">← Back to News</a>
             </div>

@@ -24,8 +24,8 @@
         <nav id="navMenu">
             <ul>
                 <li><a href="/">Acasă</a></li>
-                <li><a href="journalism/login.php">Jurnaliști</a></li>
-                <li><a href="#">Date Analitice</a></li>
+                <li><a href="journalism/login.php">LOGIN Jurnaliști</a></li>
+                <li><a href="/analytics/login.php">Date Analitice</a></li>
                 <li><a href="aboutus.php">Despre Noi</a></li>
             </ul>
         </nav>
@@ -46,7 +46,7 @@
 
         <!-- Featured -->
         <section class="featured">
-            <h2>Știri de ultima ora</h2>
+            <h2>Știri de ultima oră:</h2>
             <div class="grid">
                 <?php
                 // Load all PHP files from the `articles` folder and render a card for each.

@@ -12,6 +12,7 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
+    padding: 20px;
     
     /* Textul crem păstrat */
     color: #f3e5ab; 
@@ -21,7 +22,8 @@ body {
     background-color: #1a1a1a; /* Același card negru cărbune */
     padding: 45px 40px;
     border-radius: 12px;
-    width: 320px;
+    width: 100%;
+    max-width: 360px;
     
     /* SCHIMBARE: Accent Auriu în loc de Portocaliu */
     border-top: 4px solid #c5a059; 

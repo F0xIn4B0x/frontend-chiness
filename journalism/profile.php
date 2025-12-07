@@ -72,12 +72,20 @@ if (is_dir($articlesDir)) {
             font-weight: bold;
             transition: 0.2s; }
         .btn:hover { background: #ff2600ff; }
+        img {
+            max-width: 150px;
+            width: 150px;
+            height: auto;
+            border-radius: 8px;
+            margin: 20px auto;
+            display: block;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <img src="channels4_profile.jpg" alt="" />
         <h1>Journalist Profile</h1>
+        <img src="../channels4_profile.jpg" alt="" />
         <div class="profile-info">
             <p><label>Name:</label> <span><?php echo htmlspecialchars($profile['name']); ?></span></p>
             <p><label>Username:</label> <span><?php echo htmlspecialchars($profile['username']); ?></span></p>

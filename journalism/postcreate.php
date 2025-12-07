@@ -147,9 +147,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $uploadResults[] = $result;
             
             if (!empty($result['success'])) {
-                // Store full absolute path for the PDF file
-                $fullPath = $uploadsDir . DIRECTORY_SEPARATOR . $result['filename'];
-                $savedFiles[] = $fullPath;
+                // Store relative path (served path) for the PDF file so stubs and API receive
+                // a web-friendly path rather than an absolute filesystem path.
+                $relativePath = '../uploads/' . $result['filename'];
+                $savedFiles[] = $relativePath;
             }
         }
     }
@@ -179,8 +180,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $dest = rtrim($imagesDir, '/\\') . DIRECTORY_SEPARATOR . $uniqueImg;
                     if (move_uploaded_file($img['tmp_name'], $dest)) {
                         @chmod($dest, 0644);
-                        // Store full absolute path for the image
-                        $image = $dest;
+                        // Store a relative path to the article image so the generated article
+                        // references a web-accessible path instead of an absolute filesystem path.
+                        $image = '../articles/src/' . $uniqueImg;
                         $uploadResults[] = ['success' => true, 'message' => 'Image uploaded successfully.', 'filename' => $uniqueImg, 'type' => 'image'];
                     } else {
                         $uploadResults[] = ['success' => false, 'message' => 'Failed to move uploaded image.', 'type' => 'image'];
@@ -515,7 +517,7 @@ RENDER:
 
     <div class="container">
         <div class="header">
-            <h1>✍️ Create New Article Post</h1>
+            <h1>Create New Article Post</h1>
             <a href="../index.php" class="btn-back">← Home</a>
         </div>
 

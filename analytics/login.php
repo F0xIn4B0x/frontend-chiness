@@ -98,7 +98,7 @@ switch ($inputID) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Corporate | Acces Securizat</title>
+    <title>MD Analytics | Acces Securizat</title>
     
     <link rel="stylesheet" href="style.css">
 </head>
@@ -106,7 +106,7 @@ switch ($inputID) {
 
     <div class="login-container">
         
-        <h2>Portal Corporate</h2>
+        <h2>MD Analytics</h2>
 
         <form id="loginForm" action="login.php" method="POST">
             
@@ -116,7 +116,7 @@ switch ($inputID) {
             </div>
 
             <div class="form-group">
-                <label for="password">Securitate:</label>
+                <label for="password">Parolă:</label>
                 <input type="password" id="password" name="password" placeholder="Cheie de Acces" required>
             </div>
 
@@ -124,7 +124,7 @@ switch ($inputID) {
         </form>
 
         <div class="footer-link">
-            <a href="#">Ați întâmpinat dificultăți la autentificare? Contactați suportul.</a>
+            <a href="../aboutus.php">Ați întâmpinat dificultăți la autentificare?<br> Contactați-ne!</a>
         </div>
 
         <div id="mesaj-container" class="mesaj-box"></div>

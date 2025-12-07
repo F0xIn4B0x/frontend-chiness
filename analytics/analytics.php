@@ -231,6 +231,9 @@ body {
     gap: 10px;
     padding: 10px;
     box-sizing: border-box;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
 }
 
 .panel {
@@ -239,7 +242,7 @@ body {
     border-radius: 8px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
     padding: 20px;
-    max-height: 90vh;
+    max-height: 50vh;
     overflow-y: auto;
     border-top: 3px solid #c5a059;
 }
@@ -367,7 +370,7 @@ button:hover {
 <body>
     
     <div class="header">
-        <h1>🐞 Debug Console: Risk Data</h1>
+        <h1>MD Analytics Dashboard</h1>
         <div class="header-right">
             <div class="user-info">
                 <strong><?php echo htmlspecialchars($userName); ?></strong> (<?php echo htmlspecialchars($userSector); ?>) 
@@ -385,13 +388,13 @@ button:hover {
                 <?php endif; ?>
             </div>
             <a href="logout.php" class="btn-logout">Logout</a>
-            <a href="/" class="btn-home">← Back to Dashboard</a>
+            <a href="/" class="btn-home">← Home</a>
         </div>
     </div>
 
     <div class="main-content-grid">
         <div class="panel filter-panel">
-            <h2>🔎 Filter Risks</h2>
+            <h2>Filter Data:</h2>
             <form method="get" id="filters-form">
             <div style="margin-bottom: 15px;">
                 <label for="typerisk-filter"><strong>Filter by Type Risk:</strong></label>
@@ -438,7 +441,7 @@ button:hover {
         </div>
 
         <div class="panel risks-container-panel">
-            <h2>📋 Risk Items</h2>
+            <h2>Entries:</h2>
             <div id="risks-container">
                 <?php if (!empty($risksError)): ?>
                     <p class="placeholder-text">Error loading risks: <?php echo htmlspecialchars($risksError); ?></p>
@@ -533,7 +536,7 @@ button:hover {
         </div>
 
         <div class="panel response-panel">
-            <h2>📊 API Response Debug</h2>
+            <h2>JSON Format API Data:</h2>
             <div class="response-header">
                 <span id="response-status"><?php echo empty($risksError) ? 'OK' : 'Error'; ?></span>
                 <span id="http-status-code"><?php echo htmlspecialchars($risksHttpCode ?? ''); ?></span>

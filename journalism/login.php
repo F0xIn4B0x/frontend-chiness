@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
 
         <div class="footer-link" style="margin-top:10px;">
-            <a href="login-companie.php" style="color: #DD2200" >Reprezentați o persoană juridică? Accesați portalul dedicat aici.</a>
+            <a href="../analytics/login.php" style="color: #DD2200" >Reprezentați o persoană juridică? Accesați portalul dedicat aici.</a>
         </div>
     </div>
 
