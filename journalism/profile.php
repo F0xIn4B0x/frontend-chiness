@@ -29,24 +29,55 @@ if (is_dir($articlesDir)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Journalist Profile - Infrastructure Gap</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <title>Profil</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #eef1f5; padding: 30px 0; }
-        .container { max-width: 600px; margin: 0 auto; background: #fff; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 40px; }
-        h1 { color: #2c3e50; }
-        .profile-info { margin-bottom: 30px; }
-        .profile-info label { font-weight: bold; color: #333; }
-        .profile-info span { margin-left: 10px; color: #555; }
-        .article-count { font-size: 1.2em; color: #e74c3c; font-weight: bold; }
-        .btn { display: inline-block; margin-top: 20px; padding: 10px 20px; background: #e74c3c; color: #fff; border: none; border-radius: 6px; text-decoration: none; font-weight: bold; transition: background 0.2s; }
-        .btn:hover { background: #c0392b; }
-        .btn-logout { background: #ccc; color: #333; }
-        .btn-logout:hover { background: #e67e22; color: #fff; }
+        body { 
+            font-family: Arial, sans-serif;
+            background: #ffddc3;
+            padding: 30px 0; 
+            display: flex;
+            justify-content: center;   /* horizontal center */
+            align-items: center;       /* vertical center */
+            min-height: 100vh;         /* full screen height */
+            }
+        .container { 
+            text-align: center;
+            max-width: 600px; 
+            width: 600px;
+            margin: 0 auto;
+            background: #fff; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            
+        }
+        h1 { margin-left: 20px;color: #111; }
+        .profile-info { margin-left: 10px; margin-bottom: 30px; }
+        .profile-info label { margin-left: 10px; font-weight: bold; color: #111; }
+        .profile-info span { margin-left: 5px; color: #111; }
+        .article-count { font-size: 1.2em; color: #DD2200; font-weight: bold; }
+        .btn { 
+            display: inline-block;
+            margin-top: 20px; 
+            margin-left: 20px;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: #DD2200; 
+            color: #fff; 
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.2s; }
+        .btn:hover { background: #ff2600ff; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>👤 Journalist Profile</h1>
+        <img src="channels4_profile.jpg" alt="" />
+        <h1>Journalist Profile</h1>
         <div class="profile-info">
             <p><label>Name:</label> <span><?php echo htmlspecialchars($profile['name']); ?></span></p>
             <p><label>Username:</label> <span><?php echo htmlspecialchars($profile['username']); ?></span></p>

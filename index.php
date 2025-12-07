@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Report – News</title>
+    <title>Mandarina Descojită Press</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -11,15 +15,16 @@
 
     <!-- Navigation -->
     <header class="navbar">
-        <div class="logo">MANDARINA DECOJITA PRESS</div>
+        <div class="logo">MANDARINA DESCOJITĂ PRESS</div>
+        <img src="logo.png" alt="logo" />
 
         <!-- Mobile Menu Button -->
         <div class="menu-toggle" id="menuToggle">☰</div>
 
         <nav id="navMenu">
             <ul>
-                <li><a href="#">Acasa</a></li>
-                <li><a href="journalism/login.php">Jurnalisti</a></li>
+                <li><a href="/">Acasă</a></li>
+                <li><a href="journalism/login.php">Jurnaliști</a></li>
                 <li><a href="#">Date Analitice</a></li>
                 <li><a href="aboutus.php">Despre Noi</a></li>
             </ul>
@@ -29,9 +34,10 @@
     <!-- Hero -->
     <section class="hero">
         <div class="hero-content">
-            <h1>Breaking News Headline Goes Here</h1>
-            <p>A brief description of the top story, offering key details to convert the reader’s attention.</p>
-            <a href="#" class="btn">Read Full Story</a>
+            <h1>Ipocrizia omoară România!</h1>
+            <p>Informează-te! Ia măsuri!</p>
+            <p>Acoperim următoarele orașe: </p>
+           <marquee behavior="scroll" direction="Left" scrollamount="3"></marquee>
         </div>
     </section>
 
@@ -40,7 +46,7 @@
 
         <!-- Featured -->
         <section class="featured">
-            <h2>Top Stories</h2>
+            <h2>Știri de ultima ora</h2>
             <div class="grid">
                 <?php
                 // Load all PHP files from the `articles` folder and render a card for each.
@@ -80,33 +86,11 @@
             </div>
         </section>
 
-        <!-- Latest -->
-         <br></br>
-        <section class="latest">
-            <h2>Latest News</h2>
-            <div class="latest-list">
-                <div class="latest-item">
-                    <h4>Latest Story Title</h4>
-                    <p>Quick summary of a trending update.</p>
-                </div>
-
-                <div class="latest-item">
-                    <h4>Another Breaking Update</h4>
-                    <p>Brief description of the recent event.</p>
-                </div>
-
-                <div class="latest-item">
-                    <h4>New Development in Tech</h4>
-                    <p>Short description of tech news.</p>
-                </div>
-            </div>
-        </section>
-
     </main>
 
     <!-- Footer -->
     <footer class="footer">
-        <p>&copy; 2025 Mandarina Decojita.</p>
+        <p>&copy; 2025 Mandarina Descojită.</p>
     </footer>
 
     <script>
@@ -117,6 +101,24 @@
         toggle.addEventListener("click", () => {
             menu.classList.toggle("open");
         });
+
+        // Populate marquee from API
+        (async function populateMarquee(){
+            const mq = document.querySelector('marquee');
+            if (!mq) return;
+            try {
+                const res = await fetch('http://localhost:8080/locations');
+                if (!res.ok) throw new Error('network');
+                const json = await res.json();
+                if (!json?.status || !Array.isArray(json.content)) throw new Error('invalid');
+                const items = json.content.map(it => `${it.locatie} (${it.judeti})`);
+                // duplicate for smoother continuous scroll
+                mq.innerText = items.concat(items).join(' — ');
+            } catch (e) {
+                mq.innerText = 'error!';
+                console.error('marquee load error:', e);
+            }
+        })();
     </script>
 
 </body>

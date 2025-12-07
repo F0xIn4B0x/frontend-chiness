@@ -119,3 +119,11 @@ button:hover {
 .footer-link a:hover {
     color: #ff8c00;
 }
+/* Footer */
+.footer {
+    text-align: center;
+    background: #DD2200;
+    color: #fff;
+    padding: 18px;
+    margin-top: 30px;
+}

@@ -34,7 +34,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Jurnaliști - Logare</title>
     <link rel="stylesheet" href="../style.css">
     <style>
-        .login-container { max-width:420px;margin:40px auto;padding:20px;background:#fff;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.06); }
+        body { 
+            font-family: Arial, sans-serif;
+            background: #ffddc3;
+            padding: 30px 0; 
+            display: flex;
+            justify-content: center;   /* horizontal center */
+            align-items: center;       /* vertical center */
+            min-height: 100vh;         /* full screen height */
+            }
+        .login-container { 
+            max-width:420px;
+            margin:40px auto;
+            padding:20px;
+            background:#fff;
+            border-radius:8px;
+            box-shadow:0 6px 18px rgba(0,0,0,.06); 
+        }
+
         .login-container h2{margin-bottom:12px}
         .form-group{margin-bottom:12px}
         input[type=text],input[type=password]{width:100%;padding:10px;border:1px solid #ccc;border-radius:6px}
@@ -42,6 +59,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .mesaj-box{margin-top:12px;padding:10px;border-radius:6px}
         .mesaj-box.error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
     </style>
+       <title>Login – Mandarina Descojită Press</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+ 
 </head>
 <body>
 
@@ -66,9 +88,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
 
         <div class="footer-link" style="margin-top:10px;">
-            <a href="login-companie.php">Reprezentați o persoană juridică? Accesați portalul dedicat aici.</a>
+            <a href="login-companie.php" style="color: #DD2200" >Reprezentați o persoană juridică? Accesați portalul dedicat aici.</a>
         </div>
     </div>
+
 
 </body>
 </html>
