@@ -95,7 +95,7 @@
         </div>
 
         <div class="card">
-            <h3>Corectitudine</h3>
+            <h3>Onestitate</h3>
             <p>
                 Suntem independenți și apolitici. Prezentăm faptele exact așa cum sunt,
                 fără influențe, fără presiuni și fără compromisuri.
