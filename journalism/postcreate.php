@@ -595,28 +595,7 @@ RENDER:
                 <input type="hidden" id="filesArray" name="files" value="[]">
                 <div id="uploadedFilesList">No files uploaded yet.</div>
 
-                <?php if (!empty($uploadResults)): ?>
-                    <div id="uploadResults" style="margin-top:12px;transition:opacity .6s ease;opacity:1;display:block;">
-                        <h4>Upload Results:</h4>
-                        <?php foreach ($uploadResults as $idx => $result): ?>
-                            <div style="margin:8px 0;padding:8px;border-left:3px solid <?php echo $result['success'] ? '#28a745' : '#dc3545'; ?>">
-                                        <?php if (!empty($result['type']) && $result['type'] === 'image' && !empty($result['success'])): ?>
-                                            <p class="<?php echo $result['success'] ? 'success' : 'error' ?>"><span id="imageUploadSuccess"><?php echo htmlspecialchars($result['message']); ?></span></p>
-                                        <?php else: ?>
-                                            <p class="<?php echo $result['success'] ? 'success' : 'error' ?>"><?php echo htmlspecialchars($result['message']); ?></p>
-                                        <?php endif; ?>
-                                <?php if ($result['success']): ?>
-                                    <p>File: <code><?php echo htmlspecialchars($result['filename']); ?></code></p>
-                                    <?php if (!empty($result['type']) && $result['type'] === 'image'): ?>
-                                        <p><a href="<?php echo htmlspecialchars('../articles/src/' . rawurlencode($result['filename'])); ?>">View Image</a></p>
-                                    <?php else: ?>
-                                        <p><a href="<?php echo htmlspecialchars('../uploads/' . rawurlencode($result['filename'])); ?>">Download</a></p>
-                                    <?php endif; ?>
-                                <?php endif; ?>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
+                <!-- Upload results are moved into the debug details (see debug section below) -->
             </div>
 
             <div class="btn-actions">
@@ -632,18 +611,37 @@ RENDER:
                             <div style="margin-top:10px;">
                                 <details style="font-size:0.9em;">
                                     <summary>Debug: payload & response</summary>
-                                    <?php if (!empty($s['payload'])): ?>
-                                        <div><strong>Payload sent:</strong></div>
-                                        <pre style="background:#f7f7f7;padding:8px;border-radius:4px;max-height:200px;overflow:auto;"><?php echo htmlspecialchars($s['payload']); ?></pre>
-                                    <?php endif; ?>
-                                    <?php if (!empty($s['response_raw'])): ?>
-                                        <div><strong>Response raw:</strong></div>
-                                        <pre style="background:#f0f0f0;color:#111;padding:8px;border-radius:4px;max-height:300px;overflow:auto;"><?php echo htmlspecialchars($s['response_raw']); ?></pre>
-                                    <?php endif; ?>
-                                    <?php if (!empty($s['decoded'])): ?>
-                                        <div><strong>Response decoded:</strong></div>
-                                        <pre style="background:#eef;padding:8px;border-radius:4px;max-height:300px;overflow:auto;"><?php echo htmlspecialchars(json_encode($s['decoded'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)); ?></pre>
-                                    <?php endif; ?>
+                                                <?php if (!empty($s['payload'])): ?>
+                                                    <div><strong>Payload sent:</strong></div>
+                                                    <pre style="background:#f7f7f7;padding:8px;border-radius:4px;max-height:200px;overflow:auto;"><?php echo htmlspecialchars($s['payload']); ?></pre>
+                                                <?php endif; ?>
+                                                <?php if (!empty($s['response_raw'])): ?>
+                                                    <div><strong>Response raw:</strong></div>
+                                                    <pre style="background:#f0f0f0;color:#111;padding:8px;border-radius:4px;max-height:300px;overflow:auto;"><?php echo htmlspecialchars($s['response_raw']); ?></pre>
+                                                <?php endif; ?>
+                                                <?php if (!empty($s['decoded'])): ?>
+                                                    <div><strong>Response decoded:</strong></div>
+                                                    <pre style="background:#eef;padding:8px;border-radius:4px;max-height:300px;overflow:auto;"><?php echo htmlspecialchars(json_encode($s['decoded'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)); ?></pre>
+                                                <?php endif; ?>
+
+                                                <?php if (!empty($uploadResults)): ?>
+                                                    <div style="margin-top:12px;"><strong>Upload Results:</strong></div>
+                                                    <?php foreach ($uploadResults as $idx => $result): ?>
+                                                        <div style="margin:8px 0;padding:8px;border-left:3px solid <?php echo ($result['success'] ?? false) ? '#28a745' : '#dc3545'; ?>;">
+                                                            <p style="margin:0 0 6px 0;color:<?php echo ($result['success'] ?? false) ? '#155724' : '#721c24'; ?>;">
+                                                                <?php echo htmlspecialchars($result['message'] ?? ''); ?>
+                                                            </p>
+                                                            <?php if (!empty($result['filename'])): ?>
+                                                                <p style="margin:0;font-size:0.95em;">File: <code><?php echo htmlspecialchars($result['filename']); ?></code></p>
+                                                                <?php if (!empty($result['type']) && $result['type'] === 'image'): ?>
+                                                                    <p style="margin:6px 0 0 0;"><a href="<?php echo htmlspecialchars('../articles/src/' . rawurlencode($result['filename'])); ?>">View Image</a></p>
+                                                                <?php else: ?>
+                                                                    <p style="margin:6px 0 0 0;"><a href="<?php echo htmlspecialchars('../uploads/' . rawurlencode($result['filename'])); ?>">Download</a></p>
+                                                                <?php endif; ?>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    <?php endforeach; ?>
+                                                <?php endif; ?>
                                 </details>
                             </div>
                         <?php endif; ?>
